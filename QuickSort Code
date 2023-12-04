@@ -1,0 +1,70 @@
+ORG 0000H        ; Start of program
+LXI H, 2000H   ; Load address of the array
+MVI C, 0AH     ; Number of elements in the array (10)
+CALL QUICKSORT ; Call the quicksort routine
+HLT            ; Halt the program
+
+QUICKSORT:
+  PUSH H       ; Save the base address of the array on the stack
+  PUSH D
+  PUSH E
+
+  MOV B, M     ; Load the number of elements in B
+  INX H        ; Point to the first element
+
+  POP E        ; Restore E and D registers
+  POP D
+  POP H
+
+  LXI SP, 00FFH ; Set the stack pointer to 00FFH
+  LXI H, 0000H  ; Set the low and high indices
+  LXI D, 0009H
+
+LOOP:
+  XCHG         ; Swap low and high indices
+  MOV A, M
+  MOV B, A
+  MVI A, 00H
+  CPI B
+  JNC NO_SWAP
+  MOV A, M
+  MOV C, A
+  MOV M, B
+  INX H
+  MOV A, C
+  MOV M, A
+  INX D
+
+NO_SWAP:
+  DCR D        ; Decrement high index
+  INR H        ; Increment low index
+  CPI H        ; Compare low and high indices
+  JNZ LOOP     ; Loop until they are equal
+
+  MOV A, H
+  MOV B, A
+  MVI A, 00H
+  CPI B
+  JZ DONE
+
+  PUSH H       ; Save the base address of the array on the stack
+  PUSH D
+  PUSH E
+
+  CALL QUICKSORT
+
+  POP E
+  POP D
+  POP H
+
+  POP H       ; Restore the base address of the array from the stack
+  POP D
+  POP E
+
+  DCR D
+  PUSH H
+  CALL QUICKSORT
+  POP H
+
+DONE:
+  RET
