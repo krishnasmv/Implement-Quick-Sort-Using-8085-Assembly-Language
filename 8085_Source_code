@@ -1,0 +1,24 @@
+;ASSEMBLE CODE:
+
+21 40 20 	start:LXI H,2040H
+16 00 	MVI D, 00H
+4E 	MOV C,M
+0D 	DCR C
+23 	INX H
+7E 	check:MOV A,M
+23 	INX H
+BE 	CMP M
+DA 18 08 	JC nextbyte
+CA 18 08 	JZ nextbyte
+46 	MOV B,M
+77 	MOV M,A
+2B 	DCX H
+70 	MOV M,B
+23 	INX H
+16 01 	MVI D,01H
+0D 	nextbyte:DCR C
+C2 08 08 	JNZ check
+7A 	MOV A,D
+FE 01 	CPI 01H
+CA 00 08 	JZ start
+76 	HLT
